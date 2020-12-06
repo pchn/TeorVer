@@ -1,0 +1,432 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{pscyr}
+\usepackage[T2A]{fontenc}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage[unicode, pdftex]{hyperref}
+\geometry {	
+	a4paper, 
+	left   = 20mm, 
+	right  = 20mm, 
+	top    = 20mm, 
+	bottom = 20mm
+}
+
+\definecolor{urlcolor}{HTML}{2484BC} 
+\definecolor{linkcolor}{HTML}{000000}
+
+\graphicspath{{resource/}}
+
+
+
+\newcommand{\lskip}{\hfill\break}
+
+
+\begin{document}
+
+\begin{titlepage}
+	\begin{center}
+		\hfill \break
+		{\textbf{Санкт-Петербургский политехнический университет Петра Великого}}\\
+		\hfill \break
+		\textbf{Институт прикладной математики и механики}\\
+		 \hfill \break
+		\textbf{Кафедра <<Телематика (при ЦНИИ РТК)>>}\\
+		\vfill
+		\large{\bfseries Отчет по лабораторным работам № 1, 2}\\
+		\hfill \break
+		\hfill \break
+		\hfill \break
+		\hfill \break
+		По дисциплине <<Теория вероятностей и Математическая статистика>>\\
+		\hfill \break
+		\hfill \break
+		\hfill \break
+	\end{center}
+ 
+	\normalsize
+	{ 
+		\begin{tabular}{lp{2cm}cr}
+			Выполнил &&&\\
+			Студент гр. 3630201/80101&&\underline{\hspace{1.5cm}}& Печеный Н. А.\\\\
+			Руководитель&&&\\ 
+			к.ф.-м.н., доцент && \underline{\hspace{1.5cm}}& Баженов А. Н. \\\\
+			&&&<<\underline{\phantom{333}}>>\underline{\phantom{сентября000}}
+			2020г.
+		\end{tabular}
+	}
+\vfill
+
+\begin{center} Санкт-Петербург \\2020 \end{center}
+\end{titlepage}
+
+\newpage
+
+\setcounter{page}{2}
+
+\setlength{\parindent}{1cm}
+
+\tableofcontents
+
+\newpage
+
+\listoffigures
+
+\newpage
+
+\listoftables
+
+\newpage
+
+\section{Постановка задачи}
+Для 5 распределений:
+\begin{itemize}
+    \item Нормальное распределение $N(x, 0, 1)$
+    \item Распределение Коши $C(x, 0, 1)$
+    \item Распределение Лапласа $L(x, 0, 1/\sqrt{2})$
+    \item Распределение Пуассона $P(k, 10)$
+    \item Равномерное распределение $U(x, -\sqrt{3}, \sqrt{3})$
+\end{itemize}
+
+\noindent 1. Сгенерировать выборки размером 10, 50 и 1000 элементов.
+Построить на одном рисунке гистограмму и график плотности распределения.\\
+\phantom{0}\\
+2. Сгенерировать выборки размером 10, 100 и 1000 элементов.
+Для каждой выборки вычислить следующие статистические характеристики положения данных: $\overline{x}, med \; x, z_R, z_Q, z_{tr}$. Повторить такие
+вычисления 1000 раз для каждой выборки и найти среднее характеристик положения и их квадратов:
+\begin{equation}
+    E(z) = \overline{z} \label{meanz}
+\end{equation}
+Вычислить оценку дисперсии по формуле:
+\begin{equation}
+    D(z) = \overline{z^2} - \overline{z}^2 \label{dispersion}
+\end{equation}
+Представить полученные данные в виде таблиц.
+
+\newpage
+
+\section{Теория}
+\subsection{Рассматриваемые распределения}
+Ниже приведены плотности вероятности для рассматриваемых распределений \cite{theory}:
+\begin{itemize}
+	\item Нормальное распределение
+	\begin{equation}
+		N(x, 0, 1) = \frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}
+	\end{equation}
+
+	\item Распределение Коши
+    \begin{equation}
+        C(x, 0, 1/\sqrt{2}) =\frac{1}{\sqrt{2}} e^{-\sqrt{2}|x|}
+    \end{equation}
+
+	\item Распределение Лапласа
+	\begin{equation}
+		L(x, 0, 1) = \frac{1}{\pi}\frac{1}{x^2 + 1}
+	\end{equation}
+
+    \item Распределение Пуассона
+    \begin{equation}
+        P(k, 10) = \frac{10^k}{k!} e^{-10}
+	\end{equation}
+	
+    \item Равномерное распределение
+    \begin{equation}
+		U(x, -\sqrt{3}, \sqrt{3}) = 
+		\left\{
+		\begin{aligned}
+			& \frac{1}{2\sqrt{3}},& \; |x| <= \sqrt{3}\\
+			& 0,                  & \; |x| >= \sqrt{3}\\
+		\end{aligned}
+		\right.
+	\end{equation}
+\end{itemize}
+\subsection{Гистограмма}
+\subsubsection{Построение гистограммы}
+Множество значений, которое может принимать элемент выборки, разбивается на несколько интервалов. Чаще всего эти интервалы берут одинаковыми, но это не является строгим требованием. Эти интервалы откладываются на горизонтальной оси, затем над каждым рисуется прямоугольник. Если
+все интервалы были одинаковыми, то высота каждого прямоугольника пропорциональна числу элементов выборки, попадающих в соответствующий интервал. Если интервалы разные, то высота прямоугольника выбирается таким образом, чтобы его площадь была пропорциональна числу элементов
+выборки, которые попали в этот интервал \cite{histogram}.
+\subsection{Вариационный ряд}
+Вариационным ряд — последовательность элементов выборки, расположенных в неубывающем порядке. Одинаковые элементы повторяются \cite{theory}.
+\subsection{Выборочные числовые характеристики}
+\subsubsection{Характеристики положения}
+\begin{itemize}
+	\item Выборочное среднее
+	
+	\begin{equation}
+		\overline{x} = \frac{1}{n} \sum_{i=1}^{n}x_{i}
+		\label{mean}
+	\end{equation}
+		
+	\item Выборочная медиана
+	
+	\begin{equation}
+		med \; x = 
+		\left\{
+		\begin{aligned}
+			& x_{l + 1}, \qquad \quad n = 2l + 1\\
+			& \frac{x_{l} + x_{l + 1}}{2}, \; n = 2l\\
+		\end{aligned}
+		\right.
+		\label{med}
+	\end{equation}
+
+	\item Полусумма экстремальных выборочных элементов
+	
+	\begin{equation}
+		z_R = \frac{x_{1} + x_{n}}{2}
+		\label{extreme}
+	\end{equation}
+
+	\item Полусумма квартилей
+	
+	Выборочная квартиль $z_p$ порядка $p$ определяется формулой
+
+	$$
+	z_p = 
+	\left\{
+	\begin{aligned}
+		& x_{[np] + 1}, & np\text{ - целое}\\
+		& x_{np}, \; & np\text{ - дробное}\\
+	\end{aligned}
+	\right.
+	$$
+
+	Полусумма квартилей:
+
+	\begin{equation}
+		z_Q = \frac{z_{1/4} + z_{3/4}}{2}
+		\label{quart}
+	\end{equation}
+
+	\item Усечённое среднее
+	
+	\begin{equation}
+		z_{tr} = \frac{1}{n - 2r} \sum_{i=r+i}^{n - r}x_{(i)}, \qquad r \approx \frac{n}{4}  
+		\label{trunc}
+	\end{equation}
+
+\end{itemize}
+\subsubsection{Характеристики рассеяния}
+Выборочная дисперсия
+\begin{equation}
+	D = \frac{1}{n} \sum_{i = 1}^{n} (x_i - \overline{x})^2
+\end{equation}
+
+\newpage
+
+\section{Реализация}
+Расчёты проводились в среде аналитических вычислений Maxima. Для генерации выборок и создания и отрисовки графиков были использованы библиотечные функции среды разработки. Код скрипта представлен в репозитории на GitHub, ссылка на репозиторий находится в \hyperlink{addition}{\textbf{Приложении А}}.
+
+\newpage
+\section{Результаты}
+\subsection{Гистограмма и график плотности распределения}
+\begin{figure}[h!]
+	\begin{center}
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris1.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris2.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris3.png}}
+	\end{minipage}
+	\caption{Нормальное распределение $N(x, 0, 1)$}
+\end{center}
+\end{figure}
+\newpage
+
+\begin{figure}[h!]
+	\begin{center}
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris4.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris5.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris6.png}}
+	\end{minipage}
+	\caption{Распределение Коши $C(x, 0, 1)$}
+\end{center}
+\end{figure}
+\newpage
+
+\begin{figure}[h!]
+	\begin{center}
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris7.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris8.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris9.png}}
+	\end{minipage}
+	\caption{Распределение Лапласа $L(x, 0, 1/\sqrt{2})$}
+\end{center}
+\end{figure}
+\newpage
+
+\begin{figure}[h!]
+	\begin{center}
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris10.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris11.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris12.png}}
+	\end{minipage}
+	\caption{Распределение Пуассона $P(k, 10)$}
+\end{center}
+\end{figure}
+\newpage
+
+\begin{figure}[h!]
+	\begin{center}
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris13.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris14.png}}
+	\end{minipage}
+	\phantom{0}\\
+	\begin{minipage}[h]{0.55\linewidth}
+		\center{\includegraphics[width=1\linewidth]{Ris15.png}}
+	\end{minipage}
+	\caption{Равномерное распределение $U(x, -\sqrt{3}, \sqrt{3})$}
+\end{center}
+\end{figure}
+\newpage
+\subsection{Характеристики положения и рассеяния}
+Погрешность среднего значения характеристики выборки рассчитывалась как $\Delta_z = \sqrt{D(z)}$.
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{|*{7}{c|}} \hline
+			\multicolumn{7}{|c|}{Нормальное распределение}\\ \hline
+			\multicolumn{2}{|c|}{} & $\overline{x} \; (\ref{mean})$ & $med \; x\; (\ref{med})$ & $z_R \; (\ref{extreme})$ & $z_Q\; (\ref{quart})$ & $z_{tr}\; (\ref{trunc})$ \\ \hline
+			\multirow{2}*{$N = 10$}   & $E(z) \; (\ref{meanz}) \pm \Delta_z$ & $0.0 \pm 0.3$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.4$ \\ \cline{2-7}
+									& $D(z) \; (\ref{dispersion})$ & $0.0978$ & $0.4922$ & $0.4740$ & $0.5120$ & $0.1674$ \\ \hline
+			\multirow{2}*{$N = 100$}  & $E(z) \pm \Delta_z$ & $0.0 \pm 0.1$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.1$ \\ \cline{2-7}
+									& $D(z)$ & $0.0102$ & $0.4970$ & $0.5166$ & $0.5312$ & $0.0210$ \\ \hline
+			\multirow{2}*{$N = 1000$} & $E(z) \pm \Delta_z$ & $0.00 \pm 0.03$ & $0.0 \pm 0.7$ & $0.0 \pm 0.6$ & $0.0 \pm 0.7$ & $0.00 \pm 0.04$ \\ \cline{2-7}
+									& $D(z)$ & $0.0010$ & $0.5211$ & $0.4312$ & $0.5052$ & $0.0019$\\ \hline  		
+		\end{tabular}
+	\caption{Характеристики выборок нормального распределения}
+	\end{center}
+\end{table}
+
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{|*{7}{c|}} \hline
+			\multicolumn{7}{|c|}{Распределение Коши}\\ \hline
+			\multicolumn{2}{|c|}{} & $\overline{x}$ & $med\; x$ & $z_R$ & $z_Q$ & $z_{tr}$ \\ \hline
+			\multirow{2}*{$N = 10$}   & $E(z) \pm \Delta_z$ & $1 \pm 15$ & $0 \pm 23$ & $-1 \pm 20$ & $2 \pm 58$ & $0 \pm 19$ \\ \cline{2-7}
+									& $D(z)$ & $240$ & $548$ & $409$ & $3467$ & $371$ \\ \hline
+			\multirow{2}*{$N = 100$}  & $E(z) \pm \Delta_z$ & $2 \pm 76$ & $2 \pm 56$ & $1\pm 19$ & $1 \pm 56$ & $3 \pm 117$ \\ \cline{2-7}
+									& $D(z)$ & $5797$ & $3084$ & $371$ & $3135$ & $13831$ \\ \hline
+			\multirow{2}*{$N = 1000$} & $E(z) \pm \Delta_z$ & $-1 \pm 23$ & $-9 \pm 337$ & $1 \pm 38$ & $0 \pm 34$ & $-2 \pm 45$ \\ \cline{2-7}
+									& $D(z)$ & $517$ & $11385$ & $1435$ & $1171$ & $1996$\\ \hline					
+		\end{tabular}
+		\caption{Характеристики выборок распределения Коши}
+	\end{center}
+\end{table}
+
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{|*{7}{c|}} \hline
+			\multicolumn{7}{|c|}{Распределение Лапласа}\\ \hline
+			\multicolumn{2}{|c|}{} & $\overline{x}$ & $med\; x$ & $z_R$ & $z_Q$ & $z_{tr}$ \\ \hline
+			\multirow{2}*{$N = 10$}   & $E(z) \pm \Delta_z$ & $0.0 \pm 0.3$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.4$ \\ \cline{2-7}
+									& $D(z)$ & $0.106$ & $0.485$ & $0.559$ & $0.501$ & $0.173$ \\ \hline
+			\multirow{2}*{$N = 100$}  & $E(z) \pm \Delta_z$ & $0.0 \pm 0.1$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.1$ \\ \cline{2-7}
+									& $D(z)$ & $0.010$ & $0.498$ & $0.486$ & $0.484$ & $0.019$ \\ \hline
+			\multirow{2}*{$N = 1000$} & $E(z) \pm \Delta_z$ & $0.00 \pm 0.03$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.00 \pm 0.04$ \\ \cline{2-7}
+									& $D(z)$ & $0.001$ & $0.528$ & $0.467$ & $0.540$ & $0.002$\\ \hline					
+		\end{tabular}
+		\caption{Характеристики выборок распределения Лапласа}
+	\end{center}
+\end{table}
+
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{|*{7}{c|}} \hline
+			\multicolumn{7}{|c|}{Распределение Пуассона}\\ \hline
+			\multicolumn{2}{|c|}{} & $\overline{x}$ & $med\; x$ & $z_R$ & $z_Q$ & $z_{tr}$ \\ \hline
+			\multirow{2}*{$N = 10$}   & $E(z) \pm \Delta_z$ & $10 \pm 1$ & $10 \pm 2$ & $10 \pm 2$ & $10 \pm 2$ & $10 \pm 1$ \\ \cline{2-7}
+									& $D(z)$ & $1.05$ & $5.01$ & $4.57$ & $5.28$ & $1.77$ \\ \hline
+			\multirow{2}*{$N = 100$}  & $E(z) \pm \Delta_z$ & $10.0 \pm 0.3$ & $10.0 \pm 2.3$ & $9.9 \pm 2.3$ & $10.0 \pm 2.2$ & $10.0 \pm 0.4$ \\ \cline{2-7}
+									& $D(z)$ & $0.10$ & $5.13$ & $5.17$ & $4.97$ & $0.19$ \\ \hline
+			\multirow{2}*{$N = 1000$} & $E(z) \pm \Delta_z$ & $9.99 \pm 0.09$ & $9.95 \pm 2.23$ & $9.98 \pm 2.24$ & $10.02 \pm 2.22$ & $9.99 \pm 0.14$ \\ \cline{2-7}
+									& $D(z)$ & $0.010$ & $4.987$ & $5.004$ & $4.937$ & $0.019$\\ \hline					
+		\end{tabular}
+		\caption{Характеристики выборок распределения Пуассона}
+	\end{center}
+\end{table}
+
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{|*{7}{c|}} \hline
+			\multicolumn{7}{|c|}{Равномерное распределение}\\ \hline
+			\multicolumn{2}{|c|}{} & $\overline{x}$ & $med\; x$ & $z_R$ & $z_Q$ & $z_{tr}$ \\ \hline
+			\multirow{2}*{$N = 10$}   & $E(z) \pm \Delta_z$ & $0.0 \pm 0.3$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.4$ \\ \cline{2-7}
+									& $D(z)$ & $0.096$ & $0.499$ & $0.496$ & $0.493$ & $0.166$ \\ \hline
+			\multirow{2}*{$N = 100$}  & $E(z) \pm \Delta_z$ & $0.0 \pm 0.1$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.1$ \\ \cline{2-7}
+									& $D(z)$ & $0.011$ & $0.496$ & $0.536$ & $0.478$ & $0.020$ \\ \hline
+			\multirow{2}*{$N = 1000$} & $E(z) \pm \Delta_z$ & $0.00 \pm 0.03$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.0 \pm 0.7$ & $0.00 \pm 0.04$ \\ \cline{2-7}
+									& $D(z)$ & $0.001$ & $0.526$ & $0.517$ & $0.479$ & $0.002$\\ \hline					
+		\end{tabular}
+		\caption{Характеристики выборок равномерного распределения}
+	\end{center}
+\end{table}
+
+\newpage
+\phantom{0}\\
+\newpage
+\section{Заключение}
+\subsection{Гистограмма и график плотности распределения}
+\noindent В рамках данной работы были построены гистограммы с наложенными на них графиками плотности распределения случайных величин. По результатам проделанной работы можно сделать вывод о том, что чем
+больше выборка для каждого из распределений, тем ближе ее гистограмма
+к графику плотности вероятности того закона, по которому распределены
+величины сгенерированной выборки. Чем меньше выборка, тем менее она
+показательна - тем хуже по ней определяется характер распределения величины.\\
+Следует обратить внимание на тот факт, что максимум графика плотности распределения зачастую совпадает с максимумом (хотя бы в локальном смысле) гистограммы распределения, что особенно хорошо видно при больших выборках.\
+Также наблюдаются всплески гистограмм, что лучше всего прослеживается на распределении Коши.\\
+\subsection{Характеристики положения и рассеяния}
+В рамках работы были вычислены различные характеристики положения и рассеяния для рассматриваемых видов распределения. Следует отметить высокие значения дисперсии почти для всех характеристик в распределении Коши, которые имеют тенденцию расти с ростом выборки, что объясняется склонностью данного распределения к выбросам. Такого не наблюдается в других распределениях.
+\newpage
+
+
+\addcontentsline{toc}{section}{Список Литературы}
+\begin{thebibliography}{9}
+
+	\bibitem{histogram}
+	Histogram \url{https://en.wikipedia.org/wiki/Histogram} Дата обращения 5.12.2020
+
+	\bibitem{theory}
+	Теоретическое приложение к лабораторным работам №1-4 по дисциплине «Математическая статистика». -- СПб.: СПбПУ, 2020. -- 12 c 
+
+\end{thebibliography}
+\newpage
+\section*{\hypertarget{addition}{Приложение А. Репозиторий с исходным кодом}}
+\addcontentsline{toc}{section}{Приложение А. Репозиторий с исходным кодом}
+Ссылка на репозиторий GitHub с исходным кодом: \url{https://github.com/pchn/TeorVer}
+\end{document}
