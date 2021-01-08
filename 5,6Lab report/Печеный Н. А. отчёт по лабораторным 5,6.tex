@@ -1,0 +1,425 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{pscyr}
+\usepackage[T2A]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{multirow}
+%\usepackage{hhline}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[unicode, pdftex]{hyperref}
+\usepackage{xcolor}
+
+\DeclareUnicodeCharacter{2212}{}
+\geometry {	
+	a4paper, 
+	left   = 20mm, 
+	right  = 20mm, 
+	top    = 20mm, 
+	bottom = 20mm
+}
+
+\definecolor{urlcolor}{HTML}{000000} 
+\definecolor{linkcolor}{HTML}{000000}
+
+\graphicspath{{resource/}}
+
+\begin{document}
+
+\begin{titlepage}
+	\begin{center}
+		\hfill \break
+		{\textbf{Санкт-Петербургский политехнический университет Петра Великого}}\\
+		\hfill \break
+		\textbf{Институт прикладной математики и механики}\\
+		\hfill \break
+		\textbf{Кафедра <<Телематика (при ЦНИИ РТК)>>}\\
+		\vfill
+		\large{\bfseries Отчет по лабораторным работам № 5, 6}\\
+		\hfill \break
+		\hfill \break
+		\hfill \break
+		\hfill \break
+		По дисциплине <<Теория вероятностей и Математическая статистика>>\\
+		\hfill \break
+		\hfill \break
+		\hfill \break
+	\end{center}
+ 
+	\normalsize
+	{ 
+		\begin{tabular}{lp{2cm}cr}
+			Выполнил &&&\\
+			Студент гр. 3630201/80101&&\underline{\hspace{1.5cm}}& Печеный Н. А.\\\\
+			Руководитель&&&\\ 
+			к.ф.-м.н., доцент && \underline{\hspace{1.5cm}}& Баженов А. Н. \\\\
+			&&&<<\underline{\phantom{333}}>>\underline{\phantom{сентября000}}
+			2021г.
+		\end{tabular}
+	}
+\vfill
+
+\begin{center} Санкт-Петербург \\2021 \end{center}
+\end{titlepage}
+
+\newpage
+
+\setcounter{page}{2}
+
+\setlength{\parindent}{1cm}
+
+\tableofcontents
+
+\newpage
+
+\listoffigures
+
+\newpage
+
+\listoftables
+
+\newpage
+
+\section{Постановка задачи}
+\begin{enumerate}
+    \item Сгенерировать двумерные выборки размерами 20, 60, 100 для нормального двумерного распределения $N(x,y,0,0,1,1,\rho)$ Коэффициент корреляции $\rho$ взять равным 0, 0.5, 0.9. Каждая выборка генерируется 1000 раз и для неё вычисляются: среднее значение, среднее значение квадрата и дисперсия коэффициентов корреляции Пирсона, Спирмена и квадрантного коэффициента корреляции. Повторить все вычисления для смеси нормальных распределений:
+    \begin{equation}
+        f(x,y) = 0.9N(x,y,0,0,1,1,0.9) + 0.1N(x,y,0,0,10,10,−0.9).
+        \label{mix}
+    \end{equation}
+    Изобразить сгенерированные точки на плоскости и нарисовать эллипс
+    равновероятности.
+    \item Найти оценки коэффициентов линейной регрессии $y_i = a + bx_i + e_i$, используя 20 точек на отрезке [-1.8; 2] с равномерным шагом равным 0.2. Ошибку $e_i$ считать нормально распределённой с параметрами (0, 1). В качестве эталонной зависимости взять $y_i = 2 + 2x_i + e_i$ . При построении оценок коэффициентов использовать два критерия: критерий наименьших квадратов и критерий наименьших модулей. Проделать то же самое для выборки, у которой в значения $y_1$ и $y_20$ вносятся возмущения 10 и -10.
+\end{enumerate}
+
+\newpage
+
+\section{Теория}
+
+\subsection{Двумерное нормальное распределение}
+Двумерная случайная величина $(X, Y)$ называется распределённой нормально (или просто нормальной), если её плотность вероятности определена формулой
+\begin{multline}
+    N(x, y, \overline{x}, \overline{y}, \sigma_x, \sigma_y, \rho) = \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1 - \rho^2}} \times\\
+    \times \exp\left\{ -\frac{1}{2(1 - \rho^2)} \left[ \frac{(x - \overline{x})^2}{\sigma_x^2} - 2\rho\frac{(x - \overline{x})(y - \overline{y})}{\sigma_x\sigma_y} + \frac{(y - \overline{y})^2}{\sigma_y^2}\right] \right\}
+    \label{normal2}
+\end{multline}
+Компоненты $X, Y$ двумерной нормальной случайной величины также распределены нормально с математическими ожиданиями $\overline{x}, \overline{y}$ и средними квадратическими отклонениями $\sigma_x, \sigma_y$ соответственно \cite{theory}. Параметр $\rho$ называется коэффициентом корреляции.
+
+\subsection{Корреляционный момент (ковариация) и коэффициент корреляции}
+Корреляционный момент, иначе ковариация, двух случайных величин $X$ и $Y$:
+    \begin{equation}
+        K = cov(X, Y) = M\left[(X-\overline{x})(Y-\overline{y})\right]
+    \end{equation}
+\noindentКоэффициент корреляции $\rho$ двух случайных величин $X$ и $Y$:
+    \begin{equation}
+        \rho = \frac{K}{\sigma_x\sigma_y}
+    \end{equation}
+
+\subsection{Выборочные коэффициенты корреляции}
+    
+    \subsubsection{Выборочный коэффициент корреляции Пирсона}
+    Выборочный коэффициент корреляции Пирсона \cite{theory}:
+    \begin{equation}
+        r = \frac{\frac{1}{n} \sum (x_i - \overline{x})(y_i - \overline{y})}{\sqrt{\frac{1}{n} \sum (x_i - \overline{x})^2 \frac{1}{n} \sum (y_i - \overline{y})^2}} = \frac{K}{s_Xs_Y},
+    \label{pierson}
+    \end{equation}
+    где $K, s_X^2, s_Y^2$ -- выборочные ковариация и дисперсии с.в. $X$ и $Y$.
+
+    \subsubsection{Выборочный квадрантный коэффициент корреляции}
+    Выборочный квадрантный коэффициент корреляции \cite{theory}:
+        \begin{equation}
+        r_Q = \frac{(n_1+n_3) - (n_2 + n_4)}{n}, 
+        \label{quadrant}
+        \end{equation} 
+    где $n_1, n_2, n_3, n_4$ -- количества точек с координатами $(x_i, y_i)$, попавшими соответственно в I, II, III и IV квадранты декартовой системы с осями $x' = x - med \; x, y' = y - med \; y$ и с центром в точке с координатами $(med \; x, med \; y)$.
+
+    \subsubsection{Выборочный коэффициент ранговой корреляции Спирмена}
+    Обозначим ранги, соответствующие значениям переменной $X$, через $u$, а ранги, соответствующие значениям переменной $Y$, — через $v$.\\
+    Выборочный коэффициент ранговой корреляции Спирмена \cite{theory}:
+    \begin{equation}
+        r_S = \frac{\frac{1}{n} \sum (u_i - \overline{u})(v_i - \overline{v})}{\sqrt{\frac{1}{n} \sum (u_i - \overline{u})^2 \frac{1}{n} \sum (v_i - \overline{v})^2}},
+        \label{spirmen}
+    \end{equation} 
+    где $\overline{u} = \overline{v} = \frac{1 + 2 + ... + n}{n} = \frac{n+1}{2}$ -- среднее значение рангов.
+
+\subsection{Эллипсы рассеивания}
+Уравнение проекции эллипса рассеивания на плоскость $xOy$:
+\begin{equation}
+    \frac{(x-\overline{x})^2}{\sigma_x^2} - 2\rho\frac{(x-\overline{x})(y-\overline{y})}{\sigma_x\sigma_y} + \frac{(y-\overline{y})^2}{\sigma_y^2} = const.
+    \label{ellipse}
+\end{equation}
+Центр эллипса (\ref{ellipse}) находится в точке с координатами $(\overline{x}, \overline{y})$; оси симметрии эллипса составляют с осью $Ox$ углы, определяемые уравнением
+\begin{equation}
+    tg 2\alpha = \frac{2\rho\sigma_x\sigma_y}{\sigma_x^2 - \sigma_y^2}.
+\end{equation} 
+
+\subsection{Простая линейная регрессия}
+
+    \subsubsection{Модель простой линейной регрессии}
+    Регрессионную модель описания данных называют простой линейной регрессией, если
+    \begin{equation}
+        y_i = \beta_0 + \beta_1x_i + \varepsilon_i, \quad i=1, \dots, n,
+    \end{equation}
+    где $x_1, \dots, x_n$ — заданные числа (значения фактора); $y_1, \dots, y_n$ — наблюдаемые значения отклика; $\varepsilon_1, \dots, \varepsilon_n$ — независимые, нормально распределённые $N(0,\sigma)$ с нулевым математическим ожиданием и одинаковой (неизвестной) дисперсией случайные величины (ненаблюдаемые); $\beta_0, \beta_1$ — неизвестные параметры, подлежащие оцениванию.
+
+    \subsubsection{Метод наименьших квадратов}
+    Метод наименьших квадратов (МНК) \cite{theory}:
+    \begin{equation}
+        Q(\beta_0, \beta_1) = \sum_{i = 1}^{n}\varepsilon_{i}^{2} = \sum_{i = 1}^{n}(y_i - \beta_0 - \beta_1x_i)^2 \rightarrow \min_{\beta_0, \beta_1}.
+    \end{equation}
+
+    \subsubsection{Расчётные формулы для МНК-оценок}
+    МНК-оценки параметров $\beta_0$ и $\beta_1$ \cite{theory}:
+    \begin{equation}
+        \hat{\beta}_1 = \frac{\overline{xy} - \overline{x} \cdot \overline{y}}{\overline{x^2} - (\overline{x})^2}
+        \label{mnk1}
+    \end{equation}
+    \begin{equation}
+        \hat{\beta}_0 = \overline{y} - \overline{x}\hat{\beta}_1
+        \label{mnk0}
+    \end{equation}
+
+\subsection{Робастные оценки коэффициентов линейной регрессии}
+Метод наименьших модулей \cite{theory}:
+\begin{equation}
+    \sum_{i = 1}^{n}|y_i - \beta_0 - \beta_1x_i| \rightarrow \min_{\beta_0, \beta_1}.
+\end{equation}
+\begin{equation}
+    \hat{\beta}_{1R} = r_Q\frac{q^{*}_{y}}{q^{*}_{x}},
+    \label{mnm1}
+\end{equation}
+\begin{equation}
+    \hat{\beta}_{0R} = med \; y - \hat{\beta}_{1R} med \; x,
+    \label{mnm0}
+\end{equation}
+\begin{equation}
+    r_Q = \frac{1}{n}\sum_{i=1}^{n}sgn(x_i - med \; x)sgn(y_i - med \; y),
+\end{equation}
+\begin{equation}
+    q^{*}_{y} = \frac{y_j - y_l}{k_q(n)}, \qquad q^{*}_{x} = \frac{x_j - x_l}{k_q(n)}
+\end{equation}
+\[
+    l = 
+		\left\{
+		\begin{aligned}
+			 \left[n/4\right] + 1& \;\; \text{при} \;\; n/4 \;\; \text{дробном,}\\
+			 n/4                  & \;\; \text{при} \;\; n/4 \;\; \text{целом.}\\
+		\end{aligned}
+		\right.
+\]
+\[
+    j = n - l + 1.
+\]
+\[
+    sgn \; z = 
+		\left\{
+		\begin{aligned}
+			 1 & \; \text{при} \; z > 0,\\
+             0 & \; \text{при} \; z = 0,\\
+             -1 & \; \text{при} \; z < 0.\\
+		\end{aligned}
+		\right.
+\]
+Уравнение регрессии здесь имеет вид
+\begin{equation}
+    y = \hat{\beta}_{0R} + \hat{\beta}_{1R}x.
+\end{equation}
+
+\newpage
+\section{Реализация}
+Расчёты проводились в среде аналитических вычислений Maxima. Для генерации выборок и создания и отрисовки графиков были использованы библиотечные функции среды разработки. Код скрипта представлен в репозитории на GitHub, ссылка на репозиторий находится в \hyperlink{addition}{\textbf{Приложении А}}.
+
+\newpage
+\section{Результаты}
+\subsection{Выборочные коэффициенты корреляции}
+Ниже, в таблицах \ref{rho0} - \ref{rho09} представлены выборочные коэффициенты корреляции Пирсона, Спирмена и квадрантный коэффициент корреляции для выборок размером 20, 60 и 100 элементов двумерного нормального распределения $N(x, y, 0, 0, 1, 1, \rho)$ с коэффициентами корреляции $\rho = 0, 0.5, 0.9$. 
+\begin{table}[h]
+    \begin{center}
+        \caption{Выборочные коэффициенты корреляции для двумерного нормального распределения, $\rho = 0$}
+        \phantom{0}\\
+        \begin{tabular}{||c||c|c|c||c|c|c||c|c|c||}\hline
+            \multirow{2}*{$\rho = 0$}& \multicolumn{3}{c||}{$r\mathstrut$ (\ref{pierson})} & \multicolumn{3}{c||}{$r_Q$ (\ref{quadrant})} & \multicolumn{3}{c||}{$r_S$ (\ref{spirmen})}\\
+            \cline{2-10}
+                & $E(z)\mathstrut$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$\\
+            \hline
+            $N=20$ & $0.005\mathstrut$ & 0.053 & 0.053 & 0.006 & 0.053 & 0.053 & 0.007 & 0.052 & 0.052\\
+            \hline
+            $N=60$ & $0.001\mathstrut$ & 0.018 & 0.018 & 0.004 & 0.017 & 0.017 & 0.004 & 0.018 & 0.017\\
+            \hline
+            $N=100$ & $0.003\mathstrut$ & 0.011 & 0.011 & 0.001 & 0.01 & 0.01 & 0.004 & 0.011 & 0.011\\
+            \hline
+        \end{tabular}
+    \label{rho0}
+    \end{center}
+\end{table}
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Выборочные коэффициенты корреляции для двумерного нормального распределения, $\rho = 0.5$}
+        \phantom{0}\\
+        \begin{tabular}{||c||c|c|c||c|c|c||c|c|c||}\hline
+            \multirow{2}*{$\rho = 0.5$}& \multicolumn{3}{c||}{$r\mathstrut$} & \multicolumn{3}{c||}{$r_Q$} & \multicolumn{3}{c||}{$r_S$}\\
+            \cline{2-10}
+                & $E(z)\mathstrut$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$\\
+            \hline
+            $N=20$ & $0.5\mathstrut$ & 0.3 & 0.03 & 0.324 & 0.155 & 0.05 & 0.46 & 0.24 & 0.035\\
+            \hline
+            $N=60$ & $0.5\mathstrut$ & 0.26 & 0.01 & 0.32 & 0.12 & 0.016 & 0.5 & 0.24 & 0.01\\
+            \hline
+            $N=100$ & $0.5\mathstrut$ & 0.26 & 0.005 & 0.33 & 0.12 & 0.009 & 0.5 & 0.24 & 0.006\\
+            \hline
+        \end{tabular}
+    \label{rho05}
+    \end{center}
+\end{table}
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Выборочные коэффициенты корреляции для двумерного нормального распределения, $\rho = 0.9$}
+        \phantom{0}\\
+        \begin{tabular}{||c||c|c|c||c|c|c||c|c|c||}\hline
+            \multirow{2}*{$\rho = 0.9$}& \multicolumn{3}{c||}{$r\mathstrut$} & \multicolumn{3}{c||}{$r_Q$} & \multicolumn{3}{c||}{$r_S$}\\
+            \cline{2-10}
+                & $E(z)\mathstrut$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$\\
+            \hline
+            $N=20$ & $0.9\mathstrut$ & 0.8 & 0.003 & 0.6916 & 0.5064 & 0.03 & 0.9 & 0.75 & 0.005\\
+            \hline
+            $N=60$ & $0.89\mathstrut$ & 0.8 & 0.0007 & 0.7 & 0.5 & 0.009 & 0.89 & 0.78 & 0.001\\
+            \hline
+            $N=100$ & $0.9\mathstrut$ & 0.8 & 0.0004 & 0.7042 & 0.5 & 0.005 & 0.9 & 0.8 & 0.0006\\
+            \hline
+        \end{tabular}
+    \label{rho09}
+    \end{center}
+\end{table}
+Ниже в таблице \ref{mixTable} представлены выборочные коэффициенты корреляции Пирсона, Спирмена и квадрантный коэффициент корреляции для выборок смеси двумерных нормальных распределений (\ref{mix}) размером 20, 60 и 100 элементов.
+\newpage
+\begin{table}[h]
+    \begin{center}
+        \caption{Выборочные коэффициенты корреляции для смеси двумерных нормальных распределений}
+        \phantom{0}\\
+        \begin{tabular}{||c||c|c|c||c|c|c||c|c|c||}\hline
+            \multirow{2}*{}& \multicolumn{3}{c||}{$r\mathstrut$} & \multicolumn{3}{c||}{$r_Q$} & \multicolumn{3}{c||}{$r_S$}\\
+            \cline{2-10}
+                & $E(z)\mathstrut$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$ & $E(z)$ & $E(z^2)$ & $D(z)$\\
+            \hline
+            $N=20$ & $-0.35\mathstrut$ & 0.57 & 0.45 & 0.5332 & 0.32 & 0.036 & 0.47 & 0.3 & 0.08\\
+            \hline
+            $N=60$ & $-0.65\mathstrut$ & 0.5 & 0.08 & 0.56 & 0.32 & 0.01 & 0.5 & 0.25 & 0.026\\
+            \hline
+            $N=100$ & $-0.7\mathstrut$ & 0.52 & 0.03 & 0.56 & 0.32 & 0.007 & 0.47 & 0.23 & 0.02\\
+            \hline
+        \end{tabular}
+    \label{mixTable}
+    \end{center}
+\end{table}
+\subsection{Эллипсы рассеивания}
+Ниже на рисунках \ref{rho_0} - \ref{rho_09} представлены эллипсы рассеивания для выборок двумерного нормального распределения размером 20, 60 и 100 элементов, синим цветом обозначены элементы выборок, эллипсы построены согласно формуле (\ref{ellipse}).
+\begin{figure}[h]
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris1.png}}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris2.png}}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris3.png}}
+    \end{minipage}
+    \caption{Эллипсы рассеивания для выборок нормального распределения, $\rho = 0$}
+    \label{rho_0}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris4.png}}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris5.png}}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris6.png}}
+    \end{minipage}
+    \caption{Эллипсы рассеивания для выборок нормального распределения, $\rho = 0.5$}
+    \label{rho_05}
+\end{figure}
+
+\begin{figure}[h!]
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris7.png}}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris8.png}}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris9.png}}
+    \end{minipage}
+    \caption{Эллипсы рассеивания для выборок нормального распределения, $\rho = 0.9$}
+    \label{rho_09}
+\end{figure}
+
+\newpage
+\subsection{Оценки коэффициентов линейной регрессии}
+\subsubsection{Выборка без возмущений}
+\begin{itemize}
+    \item Критерий наименьших квадратов (\ref{mnk1} - \ref{mnk0}):
+        \[
+            \hat{\beta}_0 \approx 1.903, \quad \hat{\beta}_1 \approx 2.037   
+        \]
+    \item Критерий наименьших модулей (\ref{mnm1} - \ref{mnm0}):
+        \[
+            \hat{\beta}_{0R} \approx 2.239, \quad \hat{\beta}_{1R} \approx 1.612
+        \]
+\end{itemize}
+На рисунке \ref{noEmis} представлена выборка без возмущений, график теоретической модели, а также графики, соответствующие линейным регрессиям с коэффициентами, вычисленными согласно методам наименьших квадратов и наименьших модулей.\\
+\begin{figure}[h]
+    \begin{minipage}[h]{1\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris10.png}}
+    \end{minipage}
+    \caption{Выборка без возмущений}
+    \label{noEmis}
+\end{figure}
+\phantom{0}\\
+\subsubsection{Выборка с возмущениями}
+\begin{itemize}
+    \item Критерий наименьших квадратов (\ref{mnk1} - \ref{mnk0}):
+        \[
+            \hat{\beta}_0 \approx 2.046, \quad \hat{\beta}_1 \approx 0.608
+        \]
+    \item Критерий наименьших модулей (\ref{mnm1} - \ref{mnm0}):
+        \[
+            \hat{\beta}_{0R} \approx 2.279, \quad \hat{\beta}_{1R} \approx 1.209
+        \]
+\end{itemize}
+На рисунке \ref{Emis} представлена выборка с возмущениями, график теоретической модели, а также графики, соответствующие линейным регрессиям с коэффициентами, вычисленными согласно методам наименьших квадратов и наименьших модулей.
+\begin{figure}[h]
+    \begin{minipage}[h]{1\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Ris11.png}}
+    \end{minipage}
+    \caption{Выборка с возмущениями}
+    \label{Emis}
+\end{figure}
+
+\newpage
+\section*{Заключение}
+\addcontentsline{toc}{section}{Заключение}
+В ходе выполнения лабораторной работы были построены выборки двумерного нормального распределения с коэффициентами корреляции $\rho = 0, 0.5, 0.9$ и выборки смеси нормальных распределений. Исходя из оценок выборочных коэффициентов корреляции можно сделать вывод, что квадрантный выборочный коэффициент имеет наибольшее отклонение от теоретического значения коэффициента корреляции, но с увеличением мощности выборки все выборочные коэффициенты корреляции стремятся к своим теоретическим значениям.\\
+\noindentИз графиков двумерных нормальных распределений видно, что чем больше коэффициент корреляции, тем больше сужается эллипс рассеивания, в пределе вырождаясь в прямую, при модуле коэффициента корреляции равном единице.\\
+Также в ходе выполнения работы были построены линейные регрессии для нормально распределенной выборки. Коэффициенты регрессии вычислялись с помощью методов наименьших квадратов и наименьших модулей.\\
+Исходя из полученных результатов можно сделать вывод о том, что метод наименьших квадратов позволяет более точно определить коэффициенты регрессии, однако этот метод не устойчив к возмущениям в выборке. С другой стороны метод наименьших модулей даёт менее точную оценку, однако, являясь робастным, он гораздо устойчивее к возмущениям и хорошо подходит для работы с выборками, имеющими сильные отклонения в отдельных точках.\\
+
+\newpage
+\addcontentsline{toc}{section}{Список Литературы}
+\begin{thebibliography}{9}
+
+	\bibitem{theory}
+	Теоретическое приложение к лабораторным работам №5-8 по дисциплине «Математическая статистика». -- СПб.: СПбПУ, 2020. -- 22 c 
+
+\end{thebibliography}
+\newpage
+\section*{\hypertarget{addition}{Приложение А. Репозиторий с исходным кодом}}
+\addcontentsline{toc}{section}{Приложение А. Репозиторий с исходным кодом}
+Ссылка на репозиторий GitHub с исходным кодом: \url{https://github.com/pchn/TeorVer}
+\end{document}
+\end{document}
